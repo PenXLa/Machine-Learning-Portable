@@ -1,0 +1,6 @@
+data/
+models/
+/.idea/
+*.pth
+runs/
+__pycache__/
