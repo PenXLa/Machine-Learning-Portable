@@ -15,7 +15,7 @@ def train(train_batch_size = 96,
           weight_decay=0.001,
           epoch_num = 20,
           device='cuda'):
-    lblenc, train_data, cv_data, test_data = load_leaves()
+    lblenc, train_data, cv_data, _, _ = load_leaves()
     train_loader = DataLoader(train_data, train_batch_size, shuffle=True, num_workers=num_workers)
     cv_loader = DataLoader(cv_data, test_batch_size, shuffle=False, num_workers=num_workers)
     #test_loader = DataLoader(test_data, test_batch_size, shuffle=False)

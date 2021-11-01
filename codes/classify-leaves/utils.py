@@ -8,6 +8,8 @@ from sklearn.preprocessing import LabelEncoder
 from lib.utils import *
 
 
+# 对于训练集，getitem返回(image, label)
+# 对于测试集，getitem返回image
 class Leaves(Dataset):
     def __init__(self, train, df: pd.DataFrame, transform: torchvision.transforms):
         self.train = train
@@ -37,8 +39,9 @@ test_transform = transforms.Compose([
 ])
 
 
-# 返回LabelEncoder，train dataset，cv dataset，test dataset
-# dataset 返回的是 transformed cv2 image, encoded label
+# 返回LabelEncoder，train dataset，cv dataset，test dataset，test image filename
+# train dataset 返回的是 transformed cv2 image, encoded label
+# test dataset 返回的是 transformed cv2 image
 def load_leaves(cv_frac=.3):
     __le = LabelEncoder()
     train_df = pd.read_csv(data_path / 'classify-leaves/train.csv')
@@ -51,7 +54,8 @@ def load_leaves(cv_frac=.3):
     return __le, \
            Leaves(True, train_df, train_transform), \
            Leaves(True, cv_df, test_transform), \
-           Leaves(False, test_df, test_transform)
+           Leaves(False, test_df, test_transform), \
+            test_df['image']
 
 
 def plot_samples(sample_size, dataset: Dataset):
