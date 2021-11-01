@@ -25,7 +25,7 @@ def kaggle_download(key, path=data_path):
         colab.drive.mount("/content/drive", force_remount=True)
         Path("～/.kaggle").mkdir(parents=True, exist_ok=True)
         from shutil import copyfile
-        copyfile("/content/drive/MyDrive/kaggle.json", "~/.kaggle/")
+        copyfile("/content/drive/MyDrive/kaggle.json", "~/.kaggle/kaggle.json")
     subprocess.call(["kaggle", "competitions", "download", "-c", key, "-p", path])
     return os.path.join(path, f"{key}.zip")
 
