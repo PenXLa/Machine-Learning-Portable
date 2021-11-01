@@ -93,3 +93,9 @@ def loop_passed(n, channel=None):
     else:
         _loop_counter[channel] = 0
         return True
+
+
+# 若文件夹不存在，创建文件夹
+def mksure(path):
+    Path(path).mkdir(parents=True, exist_ok=True)
+    return path
