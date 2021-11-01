@@ -7,7 +7,6 @@ in_colab = False
 num_workers = 0
 try:
     import google.colab as colab  # 在Colab上
-
     in_colab = True
     num_workers = 2
 except:

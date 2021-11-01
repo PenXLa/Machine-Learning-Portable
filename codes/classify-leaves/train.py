@@ -6,11 +6,18 @@ from model_def import *
 import re
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
+import torch.optim.lr_scheduler as lr_scheduler
 
-def train(train_batch_size = 96, test_batch_size = 96, lr = 1, weight_decay=0.001, epoch_num = 50, device='cuda'):
+def train(train_batch_size = 96,
+          test_batch_size = 96,
+          lr = 1,
+          gamma = 0.9,
+          weight_decay=0.001,
+          epoch_num = 20,
+          device='cuda'):
     lblenc, train_data, cv_data, test_data = load_leaves()
     train_loader = DataLoader(train_data, train_batch_size, shuffle=True)
-    cv_loader = DataLoader(train_data, test_batch_size, shuffle=False)
+    cv_loader = DataLoader(cv_data, test_batch_size, shuffle=False)
     test_loader = DataLoader(test_data, test_batch_size, shuffle=False)
 
     writer = SummaryWriter()
@@ -25,8 +32,8 @@ def train(train_batch_size = 96, test_batch_size = 96, lr = 1, weight_decay=0.00
         {'params':pre_params, lr:lr/10},
         {'params':fc_params}
     ], lr = lr, weight_decay=weight_decay)
+    scheduler = lr_scheduler.ExponentialLR(updater, 0.9)
 
-    # updater = optim.Adam(filter(lambda x:x.requires_grad, model.parameters()), lr = lr, weight_decay=0.0001)
     # loss函数
     criterion = nn.CrossEntropyLoss()
 
