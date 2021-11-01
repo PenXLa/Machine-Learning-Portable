@@ -4,17 +4,18 @@ from tqdm import tqdm
 
 # 获取当前运行环境
 in_colab = False
+num_workers = 0
 try:
     import google.colab as colab  # 在Colab上
-
     in_colab = True
+    num_workers = 2
 except:
     pass
 
 # 路径相关配置
-root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))  # 项目根目录
-data_path = os.path.join(root_path, "data")  # 数据目录
-models_path = os.path.join(root_path, "models")  # 模型目录
+root_path = Path(__file__).parents[1]  # 项目根目录
+data_path = root_path / "data"  # 数据目录
+models_path = root_path / "models"  # 模型目录
 
 
 # 从kaggle下载数据
@@ -42,7 +43,7 @@ def unzip(file, targetdir=None):
     Path(targetdir).mkdir(parents=True, exist_ok=True)
 
     with ZipFile(file) as zip_ref:
-        for file in tqdm(zip_ref.namelist()):
+        for file in tqdm(zip_ref.namelist(), desc="Unzipping:"):
             zip_ref.extract(member=file, path=targetdir)
 
 
@@ -54,6 +55,5 @@ def kaggle_download_extract(key, dir_name=None):
     if dir_name is None:
         dir_name = key
     zipfile = kaggle_download(key, data_path)  # 临时下载到data目录
-    print("Unzipping...")
     unzip(zipfile, os.path.join(data_path, dir_name))
     os.remove(zipfile)
