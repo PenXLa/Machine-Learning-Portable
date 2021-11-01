@@ -11,5 +11,5 @@ def test(model, device='cuda'):
         for i, imgs in enumerate(tqdm(test_loader, desc="test")):
             imgs = imgs.to(device)
             pred = model(imgs).argmax(dim=1)
-            submission = submission.append({'image':filenames.iat[i], 'label':lblenc.inverse_transform(pred.item())}, ignore_index=True)
+            submission = submission.append({'image':filenames.iat[i], 'label':lblenc.inverse_transform(pred).item()}, ignore_index=True)
     submission.to_csv(data_path / "classify-leaves/submission.csv", index=None)

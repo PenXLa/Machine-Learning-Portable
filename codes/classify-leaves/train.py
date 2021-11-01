@@ -23,7 +23,7 @@ def train(train_batch_size = 96,
     writer = SummaryWriter()
 
     # Start Training
-    model = Net().to(device)
+    model = RareNet().to(device)
     # 提取预训练参数和fc参数
     pre_params = [param for name, param in model.named_parameters() if not re.match(r"^fc\..*", name)]
     fc_params = model.fc.parameters()
