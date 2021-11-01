@@ -33,6 +33,7 @@ test_transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
+
 # 返回LabelEncoder，train dataset，cv dataset，test dataset
 # dataset 返回的是 transformed cv2 image, encoded label
 def load_leaves(cv_frac=.3):
@@ -64,16 +65,17 @@ def plot_samples(sample_size, dataset: Dataset):
             plt.xticks(None)  # 隐藏坐标轴
             plt.yticks(None)  # 隐藏坐标轴
 
+
 def get_mean_std(dataset):
     loader = DataLoader(dataset, batch_size=8, num_workers=num_workers)
     data_m = len(dataset)
-    imgpixn = dataset[0][0][0].numel() # 图片像素大小
     data_mean = pt.zeros(3)
     data_std = pt.zeros(3)
-    for imgs, _ in tqdm(loader):
+    for imgs, _ in enumerate(tqdm(loader, desc="mean:")):
         data_mean += imgs.mean((0, 2, 3))
-    data_mean /= data_m
-    for imgs, _ in tqdm(loader):
-        data_std += imgs.var((0, 2, 3), unbiased=False)*imgpixn
-    data_std /= data_m * imgpixn - 1
-    return data_mean, data_std
+    data_mean /= len(loader)
+    # 为了方便，没有使用样本标准差的精确定义，但是误差很小
+    for imgs, _ in tqdm(loader, desc="var:"):
+        data_std += imgs.var((0, 2, 3), unbiased=False)
+    data_std /= len(loader)
+    return data_mean, pt.sqrt(data_std)
