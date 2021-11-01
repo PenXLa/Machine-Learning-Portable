@@ -55,19 +55,23 @@ def load_leaves(cv_frac=.3):
            Leaves(True, train_df, train_transform), \
            Leaves(True, cv_df, test_transform), \
            Leaves(False, test_df, test_transform), \
-            test_df['image']
+           test_df['image']
 
 
-def plot_samples(sample_size, dataset: Dataset):
+def plot_samples(sample_size, dataset: Dataset, is_test:bool=False):
     import matplotlib.pyplot as plt
     sample_loader = DataLoader(dataset, sample_size ** 2, True)
     fig, ax_array = plt.subplots(nrows=sample_size, ncols=sample_size, sharey=True, sharex=True, figsize=(12, 12))
     plt.subplots_adjust(hspace=0.4)
-    imgs, labels = next(iter(sample_loader))
+    if is_test:
+        imgs = next(iter(sample_loader))
+    else:
+        imgs, labels = next(iter(sample_loader))
     for r in range(sample_size):
         for c in range(sample_size):
             ax_array[r, c].imshow(imgs[sample_size * r + c].permute(1, 2, 0).flip(2))
-            ax_array[r, c].text(.5, -.25, str(labels[sample_size * r + c].item()), horizontalalignment='center',
+            if not is_test:
+                ax_array[r, c].text(.5, -.25, str(labels[sample_size * r + c].item()), horizontalalignment='center',
                                 transform=ax_array[r, c].transAxes)
             plt.xticks(None)  # 隐藏坐标轴
             plt.yticks(None)  # 隐藏坐标轴

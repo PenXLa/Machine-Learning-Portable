@@ -19,9 +19,14 @@ except:
 root_path = Path(__file__).parents[1]  # 项目根目录
 data_path = root_path / "data"  # 数据目录
 models_path = root_path / "models"  # 模型目录
-root_drive = Path("/content/drive/MyDrive/Machine-Learning-Portable Sync") # google drive 同步根目录
-data_drive = root_drive / "data"
-models_drive = root_drive / "models"
+# 持久化目录。在本地就是项目的目录，在colab就是google drive
+root_drive = root_path
+data_drive = data_path
+models_drive = models_path
+if in_colab:
+    root_drive = Path("/content/drive/MyDrive/Machine-Learning-Portable Sync") # google drive 同步根目录
+    data_drive = root_drive / "data"
+    models_drive = root_drive / "models"
 
 # 从kaggle下载数据
 # 若不提供path，默认下载到data目录下

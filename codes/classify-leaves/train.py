@@ -62,16 +62,21 @@ def train(train_batch_size = 96,
 
         print(f'Epoch {epoch_i} has loss {tot_loss/(batch_i+1)}')
         # 评价epoch
-        correct_num = 0
-        with pt.no_grad():
-            for batch_i, (imgs, lbls) in enumerate(tqdm(cv_loader, desc="cv")):
-                imgs = imgs.to(device)
-                lbls = lbls.to(device)
-                pred = model(imgs)
-                pred = pred.argmax(dim=1)
-                correct_num += (pred == lbls).sum()
-            tot_num = (batch_i+1)*cv_loader.batch_size
-            accuracy = correct_num / tot_num
+        accuracy = test(model, cv_loader, device)
         print(f'Epoch {epoch_i} has accuracy {accuracy}')
         writer.add_scalar("Accuracy/train", accuracy, epoch_i)
         pt.save(model.state_dict(), models_drive / "classify-leaves.pth")
+
+
+# 测试正确率
+def test(model:nn.Module, data_loader:DataLoader, device='cuda', ):
+    correct_num = 0
+    with pt.no_grad():
+        for batch_i, (imgs, lbls) in enumerate(tqdm(data_loader, desc="cv")):
+            imgs = imgs.to(device)
+            lbls = lbls.to(device)
+            pred = model(imgs)
+            pred = pred.argmax(dim=1)
+            correct_num += (pred == lbls).sum()
+        tot_num = (batch_i+1)*data_loader.batch_size
+        return correct_num / tot_num
