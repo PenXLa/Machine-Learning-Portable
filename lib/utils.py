@@ -45,6 +45,8 @@ def unzip(zipfile, targetdir=None):
 # 若不提供dir_name，则与key同名。
 # 返回解压目录
 def kaggle_download_extract(key, dir_name=None):
+    if dir_name is None:
+        dir_name = key
     zipfile = kaggle_download(key, data_path) # 临时下载到data目录
     unzip(zipfile, os.path.join(data_path, dir_name))
     os.remove(zipfile)
