@@ -21,5 +21,6 @@ def RareNet():
 def WellDoneNet(pthfile, device='cuda'):
     model = RawNet()
     model.load_state_dict(pt.load(pthfile, map_location=device))
+    return model
 
 
