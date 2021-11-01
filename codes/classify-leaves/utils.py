@@ -26,11 +26,14 @@ class Leaves(Dataset):
             return img
 
 
+normalize = transforms.Normalize([0.7590, 0.7780, 0.7579], [0.2560, 0.2274, 0.2401])
 train_transform = transforms.Compose([
-    transforms.ToTensor()
+    transforms.ToTensor(),
+    normalize
 ])
 test_transform = transforms.Compose([
-    transforms.ToTensor()
+    transforms.ToTensor(),
+    normalize
 ])
 
 
@@ -73,7 +76,7 @@ def get_mean_std(dataset):
     for imgs, _ in tqdm(loader, desc="mean"):
         data_mean += imgs.mean((0, 2, 3))
     data_mean /= len(loader)
-    # 为了方便，没有使用样本标准差的精确定义，但是误差很小
+    # 为了方便，再加上样本数很大，使用了总体标准差
     for imgs, _ in tqdm(loader, desc="var"):
         data_std += imgs.var((0, 2, 3), unbiased=False)
     data_std /= len(loader)
