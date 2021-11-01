@@ -2,6 +2,8 @@ import torch as pt
 from torch import nn
 import torchvision
 from lib.utils import *
+
+
 def Net(pthfile=None):
     if pthfile is None:
         model = torchvision.models.resnet18(pretrained=True)

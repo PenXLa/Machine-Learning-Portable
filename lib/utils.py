@@ -3,6 +3,18 @@ from pathlib import Path
 from tqdm import tqdm
 
 
+# 获取当前运行环境
+in_colab = False
+num_workers = 0
+try:
+    import google.colab as colab  # 在Colab上
+    colab.drive.mount("/content/drive", force_remount=True) #装载google drive
+    in_colab = True
+    num_workers = 2
+except:
+    pass
+
+
 # 路径相关配置
 root_path = Path(__file__).parents[1]  # 项目根目录
 data_path = root_path / "data"  # 数据目录
@@ -81,15 +93,3 @@ def loop_passed(n, channel=None):
     else:
         _loop_counter[channel] = 0
         return True
-
-
-# 获取当前运行环境
-in_colab = False
-num_workers = 0
-try:
-    import google.colab as colab  # 在Colab上
-    colab.drive.mount("/content/drive", force_remount=True) #装载google drive
-    in_colab = True
-    num_workers = 2
-except:
-    pass
