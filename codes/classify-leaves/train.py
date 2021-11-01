@@ -45,7 +45,7 @@ def train(train_batch_size = 96, test_batch_size = 96, lr = 1, epoch_num = 3, de
 
             tot_loss += loss
             correct_num += (pred.argmax(dim=1)==lbls).sum()
-            if (batch_i % 2 == 1):
+            if loop_passed(5):
                 avg_loss = tot_loss/(batch_i+1)
                 accuracy = correct_num / (train_loader.batch_size*(batch_i+1))
                 print(f'batch {batch_i} with loss {avg_loss}, accuracy {accuracy}')
@@ -66,4 +66,4 @@ def train(train_batch_size = 96, test_batch_size = 96, lr = 1, epoch_num = 3, de
             accuracy = correct_num / tot_num
         print(f'Epoch {epoch_i} has accuracy {accuracy}')
         writer.add_scalar("Accuracy/train", accuracy)
-        pt.save(model.state_dict(), "./models/resnet18-modified.pth")
+        pt.save(model.state_dict(), models_path / "classify-leaves.pth")

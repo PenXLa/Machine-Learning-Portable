@@ -7,6 +7,7 @@ in_colab = False
 num_workers = 0
 try:
     import google.colab as colab  # 在Colab上
+
     in_colab = True
     num_workers = 2
 except:
@@ -43,7 +44,7 @@ def unzip(file, targetdir=None):
     Path(targetdir).mkdir(parents=True, exist_ok=True)
 
     with ZipFile(file) as zip_ref:
-        for file in tqdm(zip_ref.namelist(), desc="Unzipping:"):
+        for file in tqdm(zip_ref.namelist(), desc="Unzip"):
             zip_ref.extract(member=file, path=targetdir)
 
 
@@ -57,3 +58,28 @@ def kaggle_download_extract(key, dir_name=None):
     zipfile = kaggle_download(key, data_path)  # 临时下载到data目录
     unzip(zipfile, os.path.join(data_path, dir_name))
     os.remove(zipfile)
+
+
+# 定时函数。如果距离上次此函数返回true时间超过t秒，就返回true。第一次调用返回true
+_last_t = 0.0
+def time_passed(t):
+    global _last_t
+    import time
+    now = time.time()
+    if now - _last_t >= t:
+        _last_t = now
+        return True
+    else:
+        return False
+
+
+# 定距函数。每调用n次就返回一次true。
+_loop_counter = 0
+def loop_passed(n):
+    global _loop_counter
+    if _loop_counter < n:
+        _loop_counter += 1
+        return False
+    else:
+        _loop_counter = 0
+        return True
