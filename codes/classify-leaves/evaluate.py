@@ -8,7 +8,7 @@ def evaluate(model, device='cuda', eval_num:int=-1):
     lblenc, _, _, test_data, filenames = load_leaves()
     test_loader = DataLoader(test_data, 1, shuffle=False, num_workers=num_workers)
     with pt.no_grad():
-        for i, imgs in enumerate(tqdm(test_loader, desc="test")):
+        for i, imgs in enumerate(tqdm(test_loader, desc="evaluate")):
             if eval_num != -1 and i >= eval_num: break
             imgs = imgs.to(device)
             pred = model(imgs).argmax(dim=1).to('cpu')
