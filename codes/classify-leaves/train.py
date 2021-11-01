@@ -56,10 +56,10 @@ def train(train_batch_size = 96,
                 avg_loss = tot_loss/(batch_i+1)
                 accuracy = correct_num / (train_loader.batch_size*(batch_i+1))
                 print(f'batch {batch_i} with loss {avg_loss}, accuracy {accuracy}')
-                writer.add_scalar(f"BatchLoss/{epoch_i}", avg_loss)
+                writer.add_scalar(f"Loss/Train", avg_loss, (epoch_i+1)*len(train_loader)+batch_i)
+                writer.add_scalar(f"Accuracy/Train", accuracy, (epoch_i+1)*len(train_loader)+batch_i)
 
         print(f'Epoch {epoch_i} has loss {tot_loss/(batch_i+1)}')
-        writer.add_scalar("Loss/train", tot_loss/(batch_i+1))
         # 评价epoch
         correct_num = 0
         with pt.no_grad():
@@ -72,5 +72,5 @@ def train(train_batch_size = 96,
             tot_num = (batch_i+1)*cv_loader.batch_size
             accuracy = correct_num / tot_num
         print(f'Epoch {epoch_i} has accuracy {accuracy}')
-        writer.add_scalar("Accuracy/train", accuracy)
+        writer.add_scalar("Accuracy/train", accuracy, epoch_i)
         pt.save(model.state_dict(), models_path / "classify-leaves.pth")
