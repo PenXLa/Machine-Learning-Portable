@@ -68,14 +68,13 @@ def plot_samples(sample_size, dataset: Dataset):
 
 def get_mean_std(dataset):
     loader = DataLoader(dataset, batch_size=8, num_workers=num_workers)
-    data_m = len(dataset)
     data_mean = pt.zeros(3)
     data_std = pt.zeros(3)
-    for imgs, _ in enumerate(tqdm(loader, desc="mean:")):
+    for imgs, _ in tqdm(loader, desc="mean"):
         data_mean += imgs.mean((0, 2, 3))
     data_mean /= len(loader)
     # 为了方便，没有使用样本标准差的精确定义，但是误差很小
-    for imgs, _ in tqdm(loader, desc="var:"):
+    for imgs, _ in tqdm(loader, desc="var"):
         data_std += imgs.var((0, 2, 3), unbiased=False)
     data_std /= len(loader)
     return data_mean, pt.sqrt(data_std)
