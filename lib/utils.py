@@ -97,5 +97,8 @@ def loop_passed(n, channel=None):
 
 # 若文件夹不存在，创建文件夹
 def mksure(path):
-    Path(path).mkdir(parents=True, exist_ok=True)
+    p = Path(path)
+    if not p.is_dir():
+        p = p.parent
+    p.mkdir(parents=True, exist_ok=True)
     return path
