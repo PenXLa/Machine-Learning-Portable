@@ -1,5 +1,5 @@
 import os
-
+from pathlib import Path
 
 # 获取当前运行环境
 in_colab = False
@@ -23,13 +23,14 @@ def kaggle_download(key, path=data_path):
     # 如果是 Colab 上，检查kaggle是否配置
     if in_colab and not os.path.exists("~/.kaggle/kaggle.json"):
         colab.drive.mount("/content/drive", force_remount=True)
-        os.system("cp /content/drive/MyDrive/kaggle.json ~/.kaggle/")
+        Path("～/.kaggle").mkdir(parents=True, exist_ok=True)
+        from shutil import copyfile
+        copyfile("/content/drive/MyDrive/kaggle.json", "~/.kaggle/")
     subprocess.call(["kaggle", "competitions", "download", "-c", key, "-p", path])
     return os.path.join(path, f"{key}.zip")
 
 # 如果不提供解压路径，则解压到新文件夹里
 def unzip(zipfile, targetdir=None):
-    from pathlib import Path
     import zipfile
     if targetdir is None:
         targetdir = os.path.splitext(zipfile)[0]

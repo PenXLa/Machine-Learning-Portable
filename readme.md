@@ -4,3 +4,5 @@
 * data：存放数据的目录。
 
 gitignore 规定所有名为 `data` 和 `models` 的文件夹不同步。
+
+PyCharm支持直接import项目任意文件。在Colab上可能存在找不到module的情况。最好把项目根目录加到Python path里。
