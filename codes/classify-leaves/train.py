@@ -16,9 +16,9 @@ def train(train_batch_size = 96,
           epoch_num = 20,
           device='cuda'):
     lblenc, train_data, cv_data, test_data = load_leaves()
-    train_loader = DataLoader(train_data, train_batch_size, shuffle=True)
-    cv_loader = DataLoader(cv_data, test_batch_size, shuffle=False)
-    test_loader = DataLoader(test_data, test_batch_size, shuffle=False)
+    train_loader = DataLoader(train_data, train_batch_size, shuffle=True, num_workers=num_workers)
+    cv_loader = DataLoader(cv_data, test_batch_size, shuffle=False, num_workers=num_workers)
+    #test_loader = DataLoader(test_data, test_batch_size, shuffle=False)
 
     writer = SummaryWriter()
 
@@ -32,7 +32,7 @@ def train(train_batch_size = 96,
         {'params':pre_params, lr:lr/10},
         {'params':fc_params}
     ], lr = lr, weight_decay=weight_decay)
-    scheduler = lr_scheduler.ExponentialLR(updater, 0.9)
+    scheduler = lr_scheduler.ExponentialLR(updater, gamma)
 
     # loss函数
     criterion = nn.CrossEntropyLoss()
@@ -41,7 +41,8 @@ def train(train_batch_size = 96,
         print(f"Epoch {epoch_i} -----------------------------")
         tot_loss = 0
         correct_num = 0
-        for batch_i, (imgs, lbls) in enumerate(tqdm(train_loader)):
+        pbar = tqdm(train_loader, desc="train") #训练进度条
+        for batch_i, (imgs, lbls) in enumerate(pbar):
             imgs = imgs.to(device)
             lbls = lbls.to(device)
             pred = model(imgs)
@@ -52,10 +53,10 @@ def train(train_batch_size = 96,
 
             tot_loss += loss
             correct_num += (pred.argmax(dim=1)==lbls).sum()
-            if loop_passed(5):
+            if loop_passed(3):
                 avg_loss = tot_loss/(batch_i+1)
                 accuracy = correct_num / (train_loader.batch_size*(batch_i+1))
-                print(f'batch {batch_i} with loss {avg_loss}, accuracy {accuracy}')
+                pbar.set_postfix({'loss': avg_loss, "accuracy":accuracy}) #更新进度条
                 writer.add_scalar(f"Loss/Train", avg_loss, epoch_i*len(train_loader)+batch_i)
                 writer.add_scalar(f"Accuracy/Train", accuracy, epoch_i*len(train_loader)+batch_i)
 
@@ -63,7 +64,7 @@ def train(train_batch_size = 96,
         # 评价epoch
         correct_num = 0
         with pt.no_grad():
-            for batch_i, (imgs, lbls) in enumerate(tqdm(cv_loader)):
+            for batch_i, (imgs, lbls) in enumerate(tqdm(cv_loader, desc="cv")):
                 imgs = imgs.to(device)
                 lbls = lbls.to(device)
                 pred = model(imgs)
@@ -73,4 +74,4 @@ def train(train_batch_size = 96,
             accuracy = correct_num / tot_num
         print(f'Epoch {epoch_i} has accuracy {accuracy}')
         writer.add_scalar("Accuracy/train", accuracy, epoch_i)
-        pt.save(model.state_dict(), models_path / "classify-leaves.pth")
+        pt.save(model.state_dict(), models_drive / "classify-leaves.pth")
