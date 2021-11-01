@@ -21,11 +21,12 @@ models_path = os.path.join(root_path, "models") # 模型目录
 def kaggle_download(key, path=data_path):
     import subprocess
     # 如果是 Colab 上，检查kaggle是否配置
-    if in_colab and not os.path.exists("~/.kaggle/kaggle.json"):
+    kaggle_path = os.path.expanduser("~/.kaggle/kaggle.json")
+    if in_colab and not os.path.exists(kaggle_path):
         colab.drive.mount("/content/drive", force_remount=True)
-        Path("~/.kaggle").mkdir(parents=True, exist_ok=True)
+        Path(kaggle_path).parent.mkdir(parents=True, exist_ok=True)
         from shutil import copyfile
-        copyfile("/content/drive/MyDrive/kaggle.json", os.path.expanduser('~/.kaggle/kaggle.json'))
+        copyfile("/content/drive/MyDrive/kaggle.json", kaggle_path)
     subprocess.call(["kaggle", "competitions", "download", "-c", key, "-p", path])
     return os.path.join(path, f"{key}.zip")
 
