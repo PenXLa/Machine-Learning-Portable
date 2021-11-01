@@ -41,6 +41,8 @@ def unzip(zipfile, targetdir=None):
 # 从kaggle下载数据并解压
 # 文件解压后，放到data/dir_name中（也就是说只能放到data中。为了方便放弃了一定的自由度）
 # 若不提供dir_name，则与key同名。
+# 返回解压目录
 def kaggle_download_extract(key, dir_name=None):
-    zipfile = kaggle_download(key, data_path) # 临时下载到项目根目录
-    unzip(zipfile, path)
+    zipfile = kaggle_download(key, data_path) # 临时下载到data目录
+    unzip(zipfile, os.path.join(data_path, dir_name))
+    os.remove(zipfile)
