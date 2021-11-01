@@ -23,9 +23,9 @@ def kaggle_download(key, path=data_path):
     # 如果是 Colab 上，检查kaggle是否配置
     if in_colab and not os.path.exists("~/.kaggle/kaggle.json"):
         colab.drive.mount("/content/drive", force_remount=True)
-        Path("～/.kaggle").mkdir(parents=True, exist_ok=True)
+        Path("~/.kaggle").mkdir(parents=True, exist_ok=True)
         from shutil import copyfile
-        copyfile("/content/drive/MyDrive/kaggle.json", "~/.kaggle/kaggle.json")
+        copyfile("/content/drive/MyDrive/kaggle.json", os.path.expanduser('~/.kaggle/kaggle.json'))
     subprocess.call(["kaggle", "competitions", "download", "-c", key, "-p", path])
     return os.path.join(path, f"{key}.zip")
 
