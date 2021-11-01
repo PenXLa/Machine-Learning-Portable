@@ -7,7 +7,7 @@ import re
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-def train(train_batch_size = 96, test_batch_size = 96, lr = 1, epoch_num = 3, device='cuda'):
+def train(train_batch_size = 96, test_batch_size = 96, lr = 1, weight_decay=0.001, epoch_num = 50, device='cuda'):
     lblenc, train_data, cv_data, test_data = load_leaves()
     train_loader = DataLoader(train_data, train_batch_size, shuffle=True)
     cv_loader = DataLoader(train_data, test_batch_size, shuffle=False)
@@ -21,10 +21,10 @@ def train(train_batch_size = 96, test_batch_size = 96, lr = 1, epoch_num = 3, de
     pre_params = [param for name, param in model.named_parameters() if not re.match(r"^fc\..*", name)]
     fc_params = model.fc.parameters()
     # 构造分组的优化器
-    updater = optim.Adam([
+    updater = optim.SGD([
         {'params':pre_params, lr:lr/10},
         {'params':fc_params}
-    ], lr = lr, weight_decay=0.001)
+    ], lr = lr, weight_decay=weight_decay)
 
     # updater = optim.Adam(filter(lambda x:x.requires_grad, model.parameters()), lr = lr, weight_decay=0.0001)
     # loss函数

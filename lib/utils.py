@@ -77,7 +77,7 @@ def time_passed(t):
 _loop_counter = 0
 def loop_passed(n):
     global _loop_counter
-    if _loop_counter < n:
+    if _loop_counter < n-1:
         _loop_counter += 1
         return False
     else:
