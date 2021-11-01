@@ -1,17 +1,20 @@
 import os
 from pathlib import Path
+from tqdm import tqdm
 
 # 获取当前运行环境
 in_colab = False
 try:
     import google.colab as colab  # 在Colab上
+
     in_colab = True
-except: pass
+except:
+    pass
 
 # 路径相关配置
-root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")) # 项目根目录
-data_path = os.path.join(root_path, "data") # 数据目录
-models_path = os.path.join(root_path, "models") # 模型目录
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))  # 项目根目录
+data_path = os.path.join(root_path, "data")  # 数据目录
+models_path = os.path.join(root_path, "models")  # 模型目录
 
 
 # 从kaggle下载数据
@@ -30,15 +33,18 @@ def kaggle_download(key, path=data_path):
     subprocess.call(["kaggle", "competitions", "download", "-c", key, "-p", path])
     return os.path.join(path, f"{key}.zip")
 
+
 # 如果不提供解压路径，则解压到新文件夹里
-def unzip(zipfile, targetdir=None):
-    import zipfile
+def unzip(file, targetdir=None):
+    from zipfile import ZipFile
     if targetdir is None:
-        targetdir = os.path.splitext(zipfile)[0]
+        targetdir = Path(file).parent
     Path(targetdir).mkdir(parents=True, exist_ok=True)
 
-    with zipfile.ZipFile(zipfile, "r") as zip_ref:
-        zip_ref.extractall(targetdir)
+    with ZipFile(file) as zip_ref:
+        for file in tqdm(zip_ref.namelist()):
+            zip_ref.extract(member=file, path=targetdir)
+
 
 # 从kaggle下载数据并解压
 # 文件解压后，放到data/dir_name中（也就是说只能放到data中。为了方便放弃了一定的自由度）
@@ -47,6 +53,7 @@ def unzip(zipfile, targetdir=None):
 def kaggle_download_extract(key, dir_name=None):
     if dir_name is None:
         dir_name = key
-    zipfile = kaggle_download(key, data_path) # 临时下载到data目录
+    zipfile = kaggle_download(key, data_path)  # 临时下载到data目录
+    print("Unzipping...")
     unzip(zipfile, os.path.join(data_path, dir_name))
     os.remove(zipfile)
