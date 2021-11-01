@@ -56,8 +56,8 @@ def train(train_batch_size = 96,
                 avg_loss = tot_loss/(batch_i+1)
                 accuracy = correct_num / (train_loader.batch_size*(batch_i+1))
                 print(f'batch {batch_i} with loss {avg_loss}, accuracy {accuracy}')
-                writer.add_scalar(f"Loss/Train", avg_loss, (epoch_i+1)*len(train_loader)+batch_i)
-                writer.add_scalar(f"Accuracy/Train", accuracy, (epoch_i+1)*len(train_loader)+batch_i)
+                writer.add_scalar(f"Loss/Train", avg_loss, epoch_i*len(train_loader)+batch_i)
+                writer.add_scalar(f"Accuracy/Train", accuracy, epoch_i*len(train_loader)+batch_i)
 
         print(f'Epoch {epoch_i} has loss {tot_loss/(batch_i+1)}')
         # 评价epoch
