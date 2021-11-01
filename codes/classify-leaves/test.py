@@ -12,3 +12,4 @@ def test(model, device='cuda'):
             imgs = imgs.to(device)
             pred = model(imgs).argmax(dim=1)
             submission = submission.append({'image':filenames.iat[i], 'label':lblenc.inverse_transform(pred.item())}, ignore_index=True)
+    submission.to_csv(data_path / "classify-leaves/submission.csv", index=None)
