@@ -40,6 +40,7 @@ def train(train_batch_size = 96,
         print(f"Epoch {epoch_i} -----------------------------")
         tot_loss = 0
         correct_num = 0
+        sample_num = 0
         model.train()
         pbar = tqdm(train_loader, desc="train") #训练进度条
         for batch_i, (imgs, lbls) in enumerate(pbar):
@@ -51,16 +52,16 @@ def train(train_batch_size = 96,
             loss.backward()
             updater.step()
 
-            tot_loss += loss
+            tot_loss += loss*len(lbls)
+            sample_num += len(lbls)
             correct_num += (pred.argmax(dim=1)==lbls).sum()
             if loop_passed(3):
-                avg_loss = tot_loss/(batch_i+1)
-                accuracy = correct_num / (train_loader.batch_size*(batch_i+1))
+                avg_loss = tot_loss/sample_num
+                accuracy = correct_num / sample_num
                 pbar.set_postfix({'loss': avg_loss, "accuracy":accuracy}) #更新进度条
                 writer.add_scalar(f"Loss/Train", avg_loss, epoch_i*len(train_loader)+batch_i)
                 writer.add_scalar(f"Accuracy/Train", accuracy, epoch_i*len(train_loader)+batch_i)
 
-        print(f'Epoch {epoch_i} has loss {tot_loss/(batch_i+1)}')
         # 评价epoch
         accuracy = test(model, cv_loader, device)
         print(f'Epoch {epoch_i} has accuracy {accuracy}')
@@ -79,5 +80,4 @@ def test(model:nn.Module, data_loader:DataLoader, device='cuda', ):
             pred = model(imgs)
             pred = pred.argmax(dim=1)
             correct_num += (pred == lbls).sum()
-        tot_num = (batch_i+1)*data_loader.batch_size
-        return correct_num / tot_num
+        return correct_num / len(data_loader.dataset)
