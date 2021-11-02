@@ -52,11 +52,11 @@ def train(train_batch_size = 96,
             loss.backward()
             updater.step()
 
-            tot_loss += loss*len(lbls)
+            tot_loss += loss.item()*len(lbls)
             sample_num += len(lbls)
-            correct_num += (pred.argmax(dim=1)==lbls).sum()
+            correct_num += (pred.argmax(dim=1)==lbls).sum().item()
             if loop_passed(3):
-                avg_loss = tot_loss/sample_num
+                avg_loss = tot_loss / sample_num
                 accuracy = correct_num / sample_num
                 pbar.set_postfix({'loss': avg_loss, "accuracy":accuracy}) #更新进度条
                 writer.add_scalar(f"Loss/Train", avg_loss, epoch_i*len(train_loader)+batch_i)
@@ -79,5 +79,5 @@ def test(model:nn.Module, data_loader:DataLoader, device='cuda', ):
             lbls = lbls.to(device)
             pred = model(imgs)
             pred = pred.argmax(dim=1)
-            correct_num += (pred == lbls).sum()
+            correct_num += (pred == lbls).sum().item()
         return correct_num / len(data_loader.dataset)
