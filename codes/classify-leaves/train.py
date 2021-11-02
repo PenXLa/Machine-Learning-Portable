@@ -18,7 +18,6 @@ def train(train_batch_size = 96,
     lblenc, train_data, cv_data, _, _ = load_leaves()
     train_loader = DataLoader(train_data, train_batch_size, shuffle=True, num_workers=num_workers)
     cv_loader = DataLoader(cv_data, test_batch_size, shuffle=False, num_workers=num_workers)
-    #test_loader = DataLoader(test_data, test_batch_size, shuffle=False)
 
     writer = SummaryWriter()
 
@@ -41,6 +40,7 @@ def train(train_batch_size = 96,
         print(f"Epoch {epoch_i} -----------------------------")
         tot_loss = 0
         correct_num = 0
+        model.train()
         pbar = tqdm(train_loader, desc="train") #训练进度条
         for batch_i, (imgs, lbls) in enumerate(pbar):
             imgs = imgs.to(device)
@@ -72,6 +72,7 @@ def train(train_batch_size = 96,
 def test(model:nn.Module, data_loader:DataLoader, device='cuda', ):
     correct_num = 0
     with pt.no_grad():
+        model.eval()
         for batch_i, (imgs, lbls) in enumerate(tqdm(data_loader, desc="cv")):
             imgs = imgs.to(device)
             lbls = lbls.to(device)
