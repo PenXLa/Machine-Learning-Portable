@@ -65,7 +65,7 @@ def train(train_batch_size = 96,
         accuracy = test(model, cv_loader, device)
         print(f'Epoch {epoch_i} has accuracy {accuracy}')
         writer.add_scalar("Accuracy/train", accuracy, epoch_i)
-        pt.save(model.state_dict(), models_drive / "classify-leaves.pth")
+        pt.save(model.state_dict(), models_drive / "classify-leaves-resnet50.pth")
 
 
 # 测试正确率

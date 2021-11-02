@@ -5,14 +5,14 @@ import torchvision
 
 # 未训练的网络
 def RawNet():
-    model = torchvision.models.resnet18()
+    model = torchvision.models.resnet50()
     model.fc = nn.Linear(model.fc.in_features, 176)
     return model
 
 
 # 加载预训练，未微调的网络
 def RareNet():
-    model = torchvision.models.resnet18(pretrained=True)
+    model = torchvision.models.resnet50(pretrained=True)
     model.fc = nn.Linear(model.fc.in_features, 176)
     return model
 
