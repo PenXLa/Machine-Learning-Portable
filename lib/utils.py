@@ -44,17 +44,36 @@ def kaggle_download(key, path=data_path):
     return os.path.join(path, f"{key}.zip")
 
 
-# 如果不提供解压路径，则解压到新文件夹里
-def unzip(file, targetdir=None):
+def unzip(file, targetdir):
     from zipfile import ZipFile
-    if targetdir is None:
-        targetdir = Path(file).parent
-    Path(targetdir).mkdir(parents=True, exist_ok=True)
-
     with ZipFile(file) as zip_ref:
         for file in tqdm(zip_ref.namelist(), desc="Unzip"):
             zip_ref.extract(member=file, path=targetdir)
 
+
+def unrar(file, targetdir):
+    from rarfile import RarFile
+    with RarFile(file) as rf:
+        for file in tqdm(rf.namelist(), desc="Unrar"):
+            rf.extract(member=file, path=targetdir)
+
+
+# 如果不提供解压路径，则解压到同名新文件夹里
+def extractAll(file, targetdir=None, delete=False):
+    file = Path(file)
+    if not file.exists():
+        raise RuntimeError("Compressed file not exists")
+    if targetdir is None:
+        targetdir = Path(file).parent / file.stem
+    Path(targetdir).mkdir(parents=True, exist_ok=True)
+    if file.suffix.lower() == ".rar":
+        unrar(file, targetdir)
+    elif file.suffix.lower() == ".zip":
+        unzip(file, targetdir)
+    else:
+        raise RuntimeError("Unsupported format")
+    if delete:
+        os.remove(file)
 
 # 从kaggle下载数据并解压
 # 文件解压后，放到data/dir_name中（也就是说只能放到data中。为了方便放弃了一定的自由度）
@@ -64,8 +83,7 @@ def kaggle_download_extract(key, dir_name=None):
     if dir_name is None:
         dir_name = key
     zipfile = kaggle_download(key, data_path)  # 临时下载到data目录
-    unzip(zipfile, os.path.join(data_path, dir_name))
-    os.remove(zipfile)
+    extractAll(zipfile, os.path.join(data_path, dir_name), delete=True)
 
 
 # 定时函数。如果距离上次此函数返回true时间超过t秒，就返回true。
